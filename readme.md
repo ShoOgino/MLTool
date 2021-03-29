@@ -1,7 +1,5 @@
 # MLTool: simple modeling tool using ML
 単純なデータセットについて、機械学習を用いたモデル構築・評価が可能なツール。
-## Installation
-執筆中
 ## Quick start
 1. python3 actions/action_example.py
 2. 実行結果がresults/${idAction}へ出力される。
