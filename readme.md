@@ -4,7 +4,7 @@
 執筆中
 ## Quick start
 1. actions/action_example.pyを実行する。
-2. 実行結果がMLTool/results/${idAction}へ出力される。
+2. 実行結果がresults/${idAction}へ出力される。
 ## Option
 本ツールでは、optionを辞書の形で管理する。actions/action_example.pyを参照のこと。
 ### Detail
@@ -25,9 +25,9 @@
 ### Dataset
 - データセットはレコードの集合であり、レコードは{レコードID(1個), 目的変数(1個), 説明変数(n個)}というデータ組である。
 - データセットはcsv形式で管理する。１列目にレコードID、２列めに目的変数、３列目以降に説明変数が並ぶ。
-- トレーニング用、バリデーション用、テスト用データセットを、MLTool/datasets/より下にあるディレクトリにまとめて配置する。ファイル名はそれぞれtrain0.csv, valid0.csv, test.csvとする。
+- トレーニング用、バリデーション用、テスト用データセットを、datasetsより下にあるディレクトリにまとめて配置する。ファイル名はそれぞれtrain0.csv, valid0.csv, test.csvとする。
 ### Result
-実行結果として得られた「ハイパーパラメータ」「モデル」「予測結果」等はMLTool/results/${idAction}/へ出力されます。
+実行結果として得られた「ハイパーパラメータ」「モデル」「予測結果」等はresults/${idAction}へ出力されます。
 ## Author
 - 荻野翔(s-ogino＠ist.osaka-u.ac.jp)
 ## License
