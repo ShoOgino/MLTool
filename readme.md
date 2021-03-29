@@ -3,7 +3,7 @@
 ## Installation
 執筆中
 ## Quick start
-1. actions/action_example.pyを実行する。
+1. python3 actions/action_example.py
 2. 実行結果がresults/${idAction}へ出力される。
 ## Option
 本ツールでは、optionを辞書の形で管理する。actions/action_example.pyを参照のこと。
