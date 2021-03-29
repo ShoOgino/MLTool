@@ -22,7 +22,7 @@
 - pathParameter: モデルを表すファイル(バイナリ)へのパス
 ## Dataset
 - データセットはcsv形式で管理する。１列目にレコードID、２列めに目的変数、３列目以降に説明変数が並ぶ。
-- トレーニング用、バリデーション用、テスト用データセットを、datasetsより下にあるディレクトリにまとめて配置する。ファイル名はそれぞれtrain0.csv, valid0.csv, test.csvとする。datasets/egit/isBuggy/4を参照のこと。
+- トレーニング用、バリデーション用、テスト用データセットを、datasets以下のディレクトリにまとめて配置する。ファイル名はそれぞれtrain0.csv, valid0.csv, test.csvとする。datasets/egit/isBuggy/4を参照のこと。
 ## Result
 実行結果はresults/${idAction}へ出力されます。
 ## Author
