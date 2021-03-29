@@ -26,6 +26,6 @@
 ## Result
 実行結果はresults/${idAction}へ出力されます。
 ## Author
-- 荻野翔(s-ogino＠ist.osaka-u.ac.jp)
+荻野翔(s-ogino＠ist.osaka-u.ac.jp)
 ## License
 [MIT license](https://en.wikipedia.org/wiki/MIT_License).
