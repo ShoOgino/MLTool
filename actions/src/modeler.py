@@ -22,7 +22,7 @@ import json
 import argparse
 import datetime
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, classification_report
 import pickle
 
 class Modeler:
@@ -198,7 +198,21 @@ class Modeler:
             yPredicted = model.predict(xTest).flatten()
         else:
             raise Exception("modelAlgorithm must be RF or DNN")
+        # output prediction result
         resultTest=np.stack((IDTest, yTest, yPredicted), axis=1)
         pathResultTest=os.path.join(self.dirResults, "resultPrediction.csv")
         with open(pathResultTest, 'w', newline="") as file:
             csv.writer(file).writerows(resultTest)
+
+        # output recall, precision, f-measure
+        yPredicted = np.round(yPredicted, 0)
+        report = classification_report(yTest, yPredicted, output_dict=True)
+        pathResultReport = os.path.join(self.dirResults, "report.json")
+        with open(pathResultReport, 'w') as file:
+            json.dump(report, file, indent=4)
+        
+        # output confusion matrics
+        cm = confusion_matrix(yTest, yPredicted)
+        sns.heatmap(cm, annot=True, cmap='Blues')
+        pathConfusionMatrix=os.path.join(self.dirResults, "confusionMatrix.png")
+        plt.savefig(pathConfusionMatrix)
