@@ -7,9 +7,9 @@ import re
 option={
     "purpose"                    : ["searchHyperParameter", "searchParameter", "test"], #set of "searchHyperParameter", "searchParameter" and "test"
     "time2searchHyperParameter"  : 30,    # required if purpose contains "searchHyperParameter"
-    "modelAlgorithm"             : "RF",  # RF or DNN
-    "processor"                  : "CPU", # CPU or GPU
-    "pathDatasetDir"             : "egit/isBuggy_moreMetrics_all/2", # MLTool/datasets/${pathDatasetDir}
+    "modelAlgorithm"             : "DNN",  # RF or DNN
+    "processor"                  : "GPU", # CPU or GPU
+    "pathDatasetDir"             : "egit/isBuggy/4", # MLTool/datasets/${pathDatasetDir}
     "pathHyperParameter"         : "",    # required if purpose is ["searchParameter"]
     "pathParameter"              : "",    # required if purpose is ["test"]
     "date"                       : datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
