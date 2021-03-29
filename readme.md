@@ -20,10 +20,10 @@
 - pathDatasetDir: データセットが置かれたディレクトリ。datasets以下を入力(例"/home/s-ogino/MLTool/datasets/egit/isBuggy/4"ならば、"egit/isBuggy/4"を入力する。)
 - pathHyperParameter: ハイパーパラメータ設定ファイル(json)へのパス。
 - pathParameter: モデルを表すファイル(バイナリ)へのパス
-### Dataset
+## Dataset
 - データセットはcsv形式で管理する。１列目にレコードID、２列めに目的変数、３列目以降に説明変数が並ぶ。
 - トレーニング用、バリデーション用、テスト用データセットを、datasetsより下にあるディレクトリにまとめて配置する。ファイル名はそれぞれtrain0.csv, valid0.csv, test.csvとする。datasets/egit/isBuggy/4を参照のこと。
-### Result
+## Result
 実行結果として得られた「ハイパーパラメータ」「モデル」「予測結果」等はresults/${idAction}へ出力されます。
 ## Author
 - 荻野翔(s-ogino＠ist.osaka-u.ac.jp)
