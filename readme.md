@@ -29,7 +29,7 @@
 - logSearchHyperParameter.txt: optunaによるハイパーパラメータサーチのログ
 - hyperparameter.json: 結果として得られた、最善のハイパーパラメータ
 ### ParameterSearch (=build a model)
-- parameter: モデル。
+- parameter: 結果として得られた、最善のモデル。
 ### test
 - resultPrediction.csv: 一列目はレコードID, ２列めは正解の値, ３列目はモデルにより予測された値
 - report.json: Recall, Precision, f-measure等。
