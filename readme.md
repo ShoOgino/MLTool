@@ -25,6 +25,15 @@
 - トレーニング用、バリデーション用、テスト用データセットを、datasets以下のディレクトリにまとめて配置する。ファイル名はそれぞれtrain0.csv, valid0.csv, test.csvとする。datasets/egit/isBuggy/4を参照のこと。
 ## Result
 実行結果はresults/${idAction}へ出力される。
+### ハイパーパラメータサーチの結果
+- logSearchHyperParameter.txt: optunaによるハイパーパラメータサーチのログ
+- hyperparameter.json: 結果として得られた、最善のハイパーパラメータ
+### モデル構築の結果
+- parameter: モデル。
+### テストの結果
+- resultPrediction.csv: 一列目はレコードID, ２列めは正解の値, ３列目はモデルにより予測された値
+- report.json: Recall, Precision, f-measure等。
+- confusionMatrix.png: 混同行列。
 ## Author
 荻野翔(s-ogino＠ist.osaka-u.ac.jp)
 ## License
