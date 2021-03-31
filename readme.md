@@ -33,7 +33,7 @@
 ### test
 - resultPrediction.csv: 一列目はレコードID, ２列めは正解の値, ３列目はモデルにより予測された値
 - report.json: Recall, Precision, f-measure等。
-- confusionMatrix.png: 混同行列。
+- confusionMatrix.png: 混同行列の図。
 ## Author
 荻野翔(s-ogino＠ist.osaka-u.ac.jp)
 ## License
