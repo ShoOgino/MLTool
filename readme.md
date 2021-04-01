@@ -2,7 +2,7 @@
 単純なデータセットについてモデルを構築し評価するためのツール。
 ## Quick start
 1. python3 actions/action_example.py
-2. 実行結果がresults/${idAction}へ出力される。
+2. ハイパーパラメータサーチ・モデル構築・精度評価の結果がresults/${idAction}へ出力される。
 ## Option
 本ツールでは、optionを辞書形式で管理する。actions/action_example.pyを参照のこと。
 ### Detail
@@ -11,7 +11,7 @@
     - searchParameter: 特定のハイパーパラメータを用いてモデル構築
     - test: 構築済モデルで予測＋精度評価
 - time2searchHyperParameter: ハイパーパラメータサーチに費やす時間(秒)。
-- modelAlgorithm: どのアルゴリズムで訓練するか。
+- modelAlgorithm: どのアルゴリズムでモデルを構築するか。
     - DNN
     - RF
 - processor: DNNで訓練する際に用いるプロセサ。
