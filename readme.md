@@ -1,5 +1,5 @@
 # MLTool: simple modeling tool using ML
-単純なデータセットについてモデルを構築し評価するためのツール。
+単純なデータセットについて、機械学習を用いて法則モデルを構築し評価するためのツール。
 ## Quick start
 1. python3 actions/action_example.py
 2. ハイパーパラメータサーチ・モデル構築・精度評価の結果がresults/${idAction}へ出力される。
