@@ -43,7 +43,7 @@ class MLManeger:
         if "searchParameter" in self.option["purpose"]:
             print("-----searchParameter-----")
             _, xTrain, yTrain = datasetLoader.loadTrain4Test()
-            _, xTest , yTest = datasetLoader.loadTrain4Test()
+            _, xTest , yTest = datasetLoader.loadValid4Test()
             self.option["pathParameter"] = modeler.searchParameter(xTrain, yTrain, xTest, yTest, self.option["modelAlgorithm"], self.option["pathHyperParameter"])
         if "test" in self.option["purpose"]:
             print("-----test-----")
