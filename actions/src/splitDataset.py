@@ -25,33 +25,23 @@ def standardize(datasTrain,datasTest):
         for data in datasTest:
             data[indexRow]=(float(data[indexRow])-mean)/std
 
-def splitDataset(project, variableDependent, release4test, period):
+def splitDataset(pathDataset4Train, pathDataset4Test, destination):
     # ensure output folder is exist
-    dirSave ="../../datasets/"+project+"/"+variableDependent+"/"+str(release4test)
-    os.makedirs(dirSave, exist_ok=True)
+    os.makedirs(destination, exist_ok=True)
 
     # train data
-    print("datapath for train")
-    pathsTrain= []
-    if period=='all':
-        for i in range(1, release4test):
-            path = "../../datasets/"+project+"/raw/"+variableDependent+"/"+str(i)+".csv"
-            pathsTrain.append(path)
-    elif period=='last3':
-        for i in range(3):
-            path = "../../datasets/"+project+"/raw/"+variableDependent+"/"+str(release4test-1-i)+".csv"
-            pathsTrain.append(path)
-    elif period=='last1':
-        path = "../../datasets/"+project+"/raw/"+variableDependent+"/"+str(release4test-1)+".csv"
-        pathsTrain.append(path)
-    print(pathsTrain)
-
     datasTrain=[]
     datasValid=[]
-    for pathTrain in pathsTrain:
-        with open(pathTrain, encoding="utf_8") as f:
-            reader = csv.reader(f)
-            datasTrain.extend([row for row in reader if row[11]!="0"]) #at least one commit from the last release
+    with open(pathDataset4Train, encoding="utf_8") as f:
+        reader = csv.reader(f)
+        datasTrain.extend([row for row in reader if row[11]!="0"]) #at least one commit from the last release
+    # test data
+    datasTest=[]
+    with open(pathDataset4Test, encoding="utf_8") as f:
+        reader = csv.reader(f)
+        datasTest.extend([row for row in reader if row[11]!="0"])
+    standardize(datasTrain, datasTest)
+
     datasBuggy=[]
     datasNotBuggy=[]
     for data in datasTrain:
@@ -78,40 +68,29 @@ def splitDataset(project, variableDependent, release4test, period):
         datasTrain.extend(trainNotBuggy)
         random.shuffle(datasTrain)#最初に1, 次に0ばっかり並んでしまっている。
         random.shuffle(datasValid)#最初に1, 次に0ばっかり並んでしまっている。
-        with open(dirSave+'/valid'+str(i)+'.csv' , 'w', newline="") as streamFileValid:
+        with open(destination + '/valid' + str(i) + '.csv' , 'w', newline="") as streamFileValid:
             writer = csv.writer(streamFileValid)
             writer.writerows(datasValid)
-        with open(dirSave+'/train'+str(i)+'.csv' , 'w', newline="") as streamFileTrain:
+        with open(destination + '/train' + str(i) + '.csv' , 'w', newline="") as streamFileTrain:
             writer = csv.writer(streamFileTrain)
             writer.writerows(datasTrain)
 
-    # test data
-    print("datapath for test")
-    pathTest="../../datasets/"+project+"/raw/"+variableDependent+"/"+str(release4test)+".csv"
-    print(pathTest)
-
-    datasTest=[]
-    with open(pathTest, encoding="utf_8") as f:
-        reader = csv.reader(f)
-        datasTest.extend([row for row in reader if row[11]!="0"])
-    with open(dirSave+'/test.csv' , 'w', newline="") as streamFileTest:
+    with open(destination+'/test.csv' , 'w', newline="") as streamFileTest:
         writer = csv.writer(streamFileTest)
         writer.writerows(datasTest)
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--project', type=str,)
-    parser.add_argument('--release4test', type=int)
-    parser.add_argument('--variableDependent', type=str)
-    parser.add_argument('--period', type=str, choices=['all', 'last3', 'last1'])
+    parser.add_argument('--dataset4train', type=str)
+    parser.add_argument('--dataset4test', type=str)
+    parser.add_argument('--destination', type=str)
     args = parser.parse_args()
 
-    project = args.project
-    release4test = args.release4test
-    variableDependent = args.variableDependent
-    period = args.period
+    pathDataset4Train = args.dataset4train
+    pathDataset4Test = args.dataset4test
+    destination = args.destination
 
-    splitDataset(project, variableDependent, release4test, period)
+    splitDataset(pathDataset4Train, pathDataset4Test, destination)
 
 if __name__ == '__main__':
     main()
