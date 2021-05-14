@@ -24,6 +24,8 @@ import datetime
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, classification_report
 import pickle
+from sklearn import svm
+from sklearn.metrics import roc_auc_score
 
 class Modeler:
     def __init__(self, dirResults):
@@ -51,24 +53,66 @@ class Modeler:
         plt.clf()
         plt.close()
 
-    def searchHyperParameter(self, xTrain, yTrain, xValid, yValid, modelAlgorithm, timeout):
-        if modelAlgorithm=="RF":
+    def searchHyperParameter(self, dataset4tuningHP, modelAlgorithm, NOfTrials):
+        if modelAlgorithm=="SVM":
             def objectiveFunction(trial):
-                params = {
+                hp={
+                    "kernel" : trial.suggest_categorical('kernel', ["linear"])
+                }
+                if hp["kernel"] == 'linear':
+                    hp["C"] = trial.suggest_int("C", 1, 1000)
+                if hp["kernel"] == 'rbf':
+                    hp["C"] = trial.suggest_int("C", 1, 1000)
+                    hp["gamma"] = trial.suggest_categorical("gammma", ["scale", "auto"])
+                if hp["kernel"] == 'poly':
+                    hp["C"] = trial.suggest_int("C", 1, 1000)
+                    hp["gamma"] = trial.suggest_categorical("gammma", ["scale", "auto"])
+                    hp["degree"] = trial.suggest_int("degree", 2, 4)
+                if hp["kernel"] == 'sigmoid':
+                    hp["C"] = trial.suggest_int("C", 1, 1000)
+                    hp["gamma"] = trial.suggest_categorical("gammma", ["scale", "auto"])
+                print(hp)
+                scoreAverage=0
+                for i in range(len(dataset4tuningHP)):
+                    xTrain = dataset4tuningHP[i]["xTrain"]
+                    yTrain = dataset4tuningHP[i]["yTrain"]
+                    xValid = dataset4tuningHP[i]["xValid"]
+                    yValid = dataset4tuningHP[i]["yValid"]
+                    model = svm.SVC(**hp)
+                    model.fit(xTrain, yTrain)
+                    score = mean_squared_error(yValid, model.predict(xValid))
+                    scoreAverage += score
+                scoreAverage = scoreAverage / len(dataset4tuningHP)
+                with open(os.path.join(self.dirResults, "results.txt"), mode='a') as f:
+                    f.write(str(score)+","+str(trial.datetime_start)+","+str(trial.params)+'\n')
+                return scoreAverage
+        elif modelAlgorithm=="RF":
+            def objectiveFunction(trial):
+                hp = {
                     'n_estimators': trial.suggest_int('n_estimators', 2, 256),
                     'max_depth': trial.suggest_int('max_depth', 2,  256),
                     'max_leaf_nodes': trial.suggest_int('max_leaf_nodes', 2,  256),
                     'min_samples_leaf': trial.suggest_int('min_samples_leaf', 2, 256),
                     'min_samples_split': trial.suggest_int('min_samples_split', 2, 256),
-                    'random_state':42}
-                model = RandomForestRegressor(**params)
-                model.fit(xTrain, yTrain)
-                score = mean_squared_error(yValid, model.predict(xValid))
+                    'random_state':42
+                }
+                scoreAverage=0
+                for i in range(len(dataset4tuningHP)):
+                    xTrain = dataset4tuningHP[i]["xTrain"]
+                    yTrain = dataset4tuningHP[i]["yTrain"]
+                    xValid = dataset4tuningHP[i]["xValid"]
+                    yValid = dataset4tuningHP[i]["yValid"]
+                    model = RandomForestRegressor(**hp)
+                    model.fit(xTrain, yTrain)
+                    score = mean_squared_error(yValid, model.predict(xValid))
+                    scoreAverage += score
+                    print(score)
+                scoreAverage = scoreAverage / len(dataset4tuningHP)
                 #全体のログをtxt形式で出力
-                with open(os.path.join(self.dirResults, "logSearchHyperParameter.txt"), mode='a') as f:
-                    f.write(str(score)+","+str(trial.params)+'\n')
-                return score
-        if modelAlgorithm=="DNN":
+                with open(os.path.join(self.dirResults, "results.txt"), mode='a') as f:
+                    f.write(str(score)+","+str(trial.datetime_start)+","+str(trial.params)+'\n')
+                return scoreAverage
+        elif modelAlgorithm=="DNN":
             def objectiveFunction(trial):
                 def chooseModel(trial):
                     n_outputs = 1
@@ -91,32 +135,40 @@ class Modeler:
                         epsilonAdam = trial.suggest_loguniform('epsilonAdam', 1e-10, 1e-5)
                         opt = keras.optimizers.Adam(lr=lrAdam, beta_1=beta_1Adam, beta_2=beta_2Adam, epsilon=epsilonAdam)
                     return opt
-                verbose, epochs, sizeBatch = 0,  10000, trial.suggest_int("sizeBatch", 64, 1024)
-                numFeatures = xTrain.shape[1]
-                model = chooseModel(trial)
-                opt = chooseOptimizer(trial)
-                model.build((None,numFeatures))
-                model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['acc'])
-                epochsEarlyStop=100
-                history=model.fit(xTrain, yTrain, epochs=epochs, batch_size=sizeBatch, verbose=verbose, validation_data=(xValid, yValid), callbacks=[EarlyStopping(monitor='val_loss', patience=epochsEarlyStop, mode='auto')])
-                self.plotLearningCurve(history, trial.number)
-                trial.set_user_attr("epochs", len(history.history['val_loss'])-100)
-                # 1エポックだけ偶然高い精度が出たような場合を弾く。
-                lossesVal = history.history['val_loss']
-                lossValMin = min(lossesVal)
-                indexValMin = lossesVal.index(lossValMin)
-                indexLast = len(lossesVal)-1
-                index5Forward = indexValMin+5 if indexValMin+5 < indexLast else indexLast
-                score=0
-                for i in range(6):
-                    score += lossesVal[index5Forward-i]
-                score = score / 6
+                scoreAverage=0
+                for i in range(len(dataset4tuningHP)):
+                    xTrain = dataset4tuningHP[i]["xTrain"]
+                    yTrain = dataset4tuningHP[i]["yTrain"]
+                    xValid = dataset4tuningHP[i]["xValid"]
+                    yValid = dataset4tuningHP[i]["yValid"]
+                    verbose, epochs, sizeBatch = 0,  10000, trial.suggest_int("sizeBatch", 64, 1024)
+                    numFeatures = xTrain.shape[1]
+                    model = chooseModel(trial)
+                    opt = chooseOptimizer(trial)
+                    model.build((None,numFeatures))
+                    model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['acc'])
+                    epochsEarlyStop=100
+                    history=model.fit(xTrain, yTrain, epochs=epochs, batch_size=sizeBatch, verbose=verbose, validation_data=(xValid, yValid), callbacks=[EarlyStopping(monitor='val_loss', patience=epochsEarlyStop, mode='auto')])
+                    self.plotLearningCurve(history, trial.number)
+                    trial.set_user_attr("epochs", len(history.history['val_loss'])-100)
+                    # 1エポックだけ偶然高い精度が出たような場合を弾く。
+                    lossesVal = history.history['val_loss']
+                    lossValMin = min(lossesVal)
+                    indexValMin = lossesVal.index(lossValMin)
+                    indexLast = len(lossesVal)-1
+                    index5Forward = indexValMin+5 if indexValMin+5 < indexLast else indexLast
+                    score=0
+                    for i in range(6):
+                        score += lossesVal[index5Forward-i]
+                    score = score / 6
+                    scoreAverage += score
+                scoreAverage = scoreAverage / len(dataset4tuningHP)
                 #ログをtxt形式で出力
                 with open(os.path.join(self.dirResults, "results.txt"), mode='a') as f:
-                    f.write(str(score)+","+str(trial.params)+'\n')
-                return score
+                    f.write(str(score)+","+str(trial.datetime_start)+","+str(trial.params)+'\n')
+                return scoreAverage
         study = optuna.create_study()
-        study.optimize(objectiveFunction, timeout = timeout)
+        study.optimize(objectiveFunction, n_trials=NOfTrials)
 
         # save the hyperparameter that seems to be the best.
         pathHyperParameter = os.path.join(self.dirResults, "hyperparameter.json")
@@ -127,7 +179,15 @@ class Modeler:
     def searchParameter(self, xTrain, yTrain, xTest, yTest, modelAlgorithm, pathHP):
         with open(pathHP, mode='r') as file:
             hp = json.load(file)
-        if modelAlgorithm=="RF":
+        if modelAlgorithm=="SVM":
+            model = SVM(**hp)
+            model.fit(xTrain, yTrain)
+            # save parameter that seems to be the best
+            pathParameter = os.path.join(self.dirResults, 'parameter')
+            with open(pathParameter, mode='wb') as file:
+                pickle.dump(model, file)
+            return pathParameter
+        elif modelAlgorithm=="RF":
             model=RandomForestRegressor(
                 n_estimators=hp["n_estimators"],
                 max_depth=hp["max_depth"],
@@ -188,8 +248,12 @@ class Modeler:
         else:
             raise Exception("modelAlgorithm must be RF or DNN")
 
-    def test(self, IDTest, xTest, yTest, modelAlgorithm, pathParameter):
-        if modelAlgorithm=="RF":
+    def test(self, IDRecord, xTest, yTest, modelAlgorithm, pathParameter):
+        if modelAlgorithm=="SVM":
+            with open(pathParameter, mode='rb') as file:
+                model = pickle.load(file)
+            yPredicted = model.predict(xTest).flatten()
+        elif modelAlgorithm=="RF":
             with open(pathParameter, mode='rb') as file:
                 model = pickle.load(file)
             yPredicted=model.predict(xTest).flatten()
@@ -199,18 +263,19 @@ class Modeler:
         else:
             raise Exception("modelAlgorithm must be RF or DNN")
         # output prediction result
-        resultTest=np.stack((IDTest, yTest, yPredicted), axis=1)
+        resultTest=np.stack((IDRecord, yTest, yPredicted), axis=1)
         pathResultTest=os.path.join(self.dirResults, "resultPrediction.csv")
         with open(pathResultTest, 'w', newline="") as file:
             csv.writer(file).writerows(resultTest)
 
-        # output recall, precision, f-measure
+        # output recall, precision, f-measure, AUC
         yPredicted = np.round(yPredicted, 0)
         report = classification_report(yTest, yPredicted, output_dict=True)
+        report["AUC"] = roc_auc_score(yTest, yPredicted)
         pathResultReport = os.path.join(self.dirResults, "report.json")
         with open(pathResultReport, 'w') as file:
             json.dump(report, file, indent=4)
-        
+
         # output confusion matrics
         cm = confusion_matrix(yTest, yPredicted)
         sns.heatmap(cm, annot=True, cmap='Blues')
