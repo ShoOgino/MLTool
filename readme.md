@@ -17,7 +17,7 @@
 - processor: DNNで訓練する際に用いるプロセサ。
     - CPU
     - GPU
-- pathDatasetDir: データセットが置かれたディレクトリ。datasets以下を入力(例"/home/s-ogino/MLTool/datasets/egit/isBuggy/4"ならば、"egit/isBuggy/4"を入力する。)
+- pathDatasetDir: データセットが置かれたディレクトリ。datasets以下を入力 (例: データセットが置かれたディレクトリが"/home/s-ogino/MLTool/datasets/egit/isBuggy/4"ならば、"egit/isBuggy/4"を入力する。)
 - pathHyperParameter: ハイパーパラメータ設定ファイル(json)へのパス。
 - pathParameter: モデルを表すファイル(バイナリ)へのパス
 ## Dataset
