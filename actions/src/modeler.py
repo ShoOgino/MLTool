@@ -79,6 +79,8 @@ class Modeler:
                     xValid = dataset4tuningHP[i]["xValid"]
                     yValid = dataset4tuningHP[i]["yValid"]
                     model = svm.SVC(**hp)
+                    print(len(xTrain))
+                    print(len(yTrain))
                     model.fit(xTrain, yTrain)
                     score = mean_squared_error(yValid, model.predict(xValid))
                     scoreAverage += score
