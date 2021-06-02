@@ -3,7 +3,6 @@ import torchvision
 import torch.nn.functional as F
 import torch.nn as nn
 import optuna
-import pandas as pd
 import numpy as np
 import glob
 import os
@@ -24,11 +23,15 @@ from src.result.result4BugPrediction import Result4BugPrediction
 
 class RF4BugPrediction(nn.Module):
     def __init__(self):
+        self.period4HyperParameterSearch = 60*1
         self.trials4HyperParameterSearch = 100
         self.isCrossValidation = True
 
     def setTrials4HyperParameterSearch(self, trials4HyperParameterSearch):
         self.trials4HyperParameterSearch = trials4HyperParameterSearch
+
+    def setPeriod4HyperParameterSearch(self, period4HyperParameterSearch):
+        self.period4HyperParameterSearch = period4HyperParameterSearch
 
     def setIsCrossValidation(self, isCrossValidation):
         self.isCrossValidation = isCrossValidation
@@ -60,15 +63,16 @@ class RF4BugPrediction(nn.Module):
                 f.write(str(scoreAverage)+","+str(trial.datetime_start)+","+str(trial.params)+'\n')
             return scoreAverage
         study = optuna.create_study()
-        study.optimize(objectiveFunction, n_trials=self.trials4HyperParameterSearch)
+        study.optimize(objectiveFunction, timeout=self.period4HyperParameterSearch)#n_trials=self.trials4HyperParameterSearch)
 
         #save the hyperparameter that seems to be the best.
-        with open(Result4BugPrediction.getPathHyperParameter(), mode='a') as file:
+        with open(Result4BugPrediction.getPathHyperParameter(), mode='w') as file:
             json.dump(dict(study.best_params.items()^study.best_trial.user_attrs.items()), file, indent=4)
         return Result4BugPrediction.getPathHyperParameter()
 
     def searchParameter(self, dataset4Training):
         with open(Result4BugPrediction.getPathHyperParameter(), mode='r') as file:
+            print(Result4BugPrediction.getPathHyperParameter())
             hp = json.load(file)
         model=RandomForestRegressor(
             n_estimators=hp["n_estimators"],
