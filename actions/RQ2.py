@@ -60,7 +60,7 @@ def main():
     ]
     settings = []
     for nameProject in namesProject:
-        pathsDataset = glob.glob(dirDatasets+"/"+nameProject+"/datasets/*.csv")
+        pathsDataset = glob.glob(dirDatasets+"/"+nameProject+"/output/*.csv")
         for pathDataset in pathsDataset:
             filenameDataset = os.path.splitext(os.path.basename(pathDataset))[0]
             setting = {}
@@ -68,7 +68,7 @@ def main():
             setting["numOfRelease"] = filenameDataset.split("_")[0]
             setting["pattern"] = filenameDataset.split("_")[1]
             setting["dirDatasets"] = os.path.dirname(pathDataset)
-            if(not setting in settings): settings.append(setting)
+            if(setting["pattern"]=="r" and not setting in settings): settings.append(setting)
     print(settings)
     numOfProcessers = multiprocessing.cpu_count()
     pool = Pool(numOfProcessers-2)
