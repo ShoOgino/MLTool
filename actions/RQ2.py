@@ -47,7 +47,7 @@ def do(setting):
     maneger.run(experiment)
 
 def main():
-    dirDatasets = r"C:\Users\login\data\workspace\MLTool\datasets"
+    dirDatasets = r"../datasets"
     namesProject = [
         "cassandra",
         "checkstyle",
