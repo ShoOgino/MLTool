@@ -21,7 +21,7 @@ class Dataset4BugPrediction():
                 for i, row in enumerate(records):
                     if(not ("test" in row[0] or "Test" in row[0])):
                     #if(not (row[11] == "0" or "test" in row[0] or "Test" in row[0])):
-                        self.records4Train.append([row[0], int(row[1]), [float(x) for x in row[2:]]])
+                        self.records4Train.append([row[0], int(row[1]), [float(x) for x in row[2:26]]])
 
     def loadRecords4Test(self):
         self.records4Test=[]
@@ -30,7 +30,7 @@ class Dataset4BugPrediction():
                 records = csv.reader(f)
                 for i, row in enumerate(records):
                     if(not ("test" in row[0] or "Test" in row[0])):
-                        self.records4Test.append([row[0], int(row[1]), [float(x) for x in row[2:]]])
+                        self.records4Test.append([row[0], int(row[1]), [float(x) for x in row[2:26]]])
 
     def setSplitSize4Validation(self, splitSize4Validation):
         self.splitSize4Validation = splitSize4Validation
