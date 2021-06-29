@@ -1,12 +1,10 @@
-import torch
-import torchvision
-import numpy as np
 import os
 import csv
 import copy
 import random
+import numpy as np
 
-class Dataset4BugPrediction(torch.utils.data.Dataset):
+class Dataset4BugPrediction():
     def __init__(self):
         self.records4Train = []
         self.pathsRecords4Train = []
@@ -18,19 +16,20 @@ class Dataset4BugPrediction(torch.utils.data.Dataset):
     def loadRecords4Train(self):
         self.records4Train=[]
         for path in self.pathsRecords4Train:
-            with open(path) as f:
+            with open(path, encoding="utf-8") as f:
                 records = csv.reader(f)
                 for i, row in enumerate(records):
-                    if(not (row[11] == "0" or "test" in row[0] or "Test" in row[0])):
+                    if(not ("test" in row[0] or "Test" in row[0])):
+                    #if(not (row[11] == "0" or "test" in row[0] or "Test" in row[0])):
                         self.records4Train.append([row[0], int(row[1]), [float(x) for x in row[2:]]])
 
     def loadRecords4Test(self):
         self.records4Test=[]
         for path in self.pathsRecords4Test:
-            with open(path) as f:
+            with open(path, encoding="utf-8") as f:
                 records = csv.reader(f)
                 for i, row in enumerate(records):
-                    if(not (row[11] == "0" or "test" in row[0] or "Test" in row[0])):
+                    if(not ("test" in row[0] or "Test" in row[0])):
                         self.records4Test.append([row[0], int(row[1]), [float(x) for x in row[2:]]])
 
     def setSplitSize4Validation(self, splitSize4Validation):
@@ -53,9 +52,15 @@ class Dataset4BugPrediction(torch.utils.data.Dataset):
             mean=np.array(features[index]).mean()
             std=np.std(features[index])
             for row in self.records4Train:
-                row[2][index]=(float(row[2][index])-mean)/std
+                if(not std == 0):
+                    row[2][index]=(float(row[2][index])-mean)/std
+                else:
+                    pass
             for row in self.records4Test:
-                row[2][index]=(float(row[2][index])-mean)/std
+                if(not std == 0):
+                    row[2][index]=(float(row[2][index])-mean)/std
+                else:
+                    pass
 
     def getDataset4SearchHyperParameter(self):
         arrayOfD4TAndD4V = []

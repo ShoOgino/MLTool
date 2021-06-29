@@ -1,7 +1,3 @@
-import torch
-import torchvision
-import torch.nn.functional as F
-import torch.nn as nn
 import optuna
 import numpy as np
 import glob
@@ -21,7 +17,7 @@ from sklearn import svm
 from sklearn.metrics import roc_auc_score
 from src.result.result4BugPrediction import Result4BugPrediction
 
-class RF4BugPrediction(nn.Module):
+class RF4BugPrediction():
     def __init__(self):
         self.period4HyperParameterSearch = 60*1
         self.trials4HyperParameterSearch = 100
@@ -55,13 +51,13 @@ class RF4BugPrediction(nn.Module):
                 model = RandomForestRegressor(**hp)
                 model.fit(xTrain, yTrain)
                 score = mean_squared_error(yValid, model.predict(xValid))
-                print(score)
                 scoreAverage += score
             scoreAverage = scoreAverage / len(arrayOfD4TAndD4V)
             #全体のログをloggerで出力
             with open(Result4BugPrediction.getPathLogSearchHyperParameter(), mode='a') as f:
                 f.write(str(scoreAverage)+","+str(trial.datetime_start)+","+str(trial.params)+'\n')
             return scoreAverage
+        optuna.logging.disable_default_handler()
         study = optuna.create_study()
         study.optimize(objectiveFunction, timeout=self.period4HyperParameterSearch)#n_trials=self.trials4HyperParameterSearch)
 

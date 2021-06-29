@@ -1,11 +1,7 @@
 import sys
 import glob
-import pandas as pd
 import json
 import subprocess
-import torch.nn.functional as F
-import torch.nn as nn
-import torch
 from src.result.result4BugPrediction import Result4BugPrediction
 
 class Maneger:

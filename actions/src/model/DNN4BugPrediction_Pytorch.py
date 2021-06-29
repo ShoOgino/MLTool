@@ -26,7 +26,7 @@ class DNN4BugPrediction_Pytorch(nn.Module):
         super().__init__()
         self.trials4HyperParameterSearch = 100
         self.isCrossValidation = True
-        self.device = "cpu"
+        self.device = "cuda:0"
 
     def forward(self, x):
         logits = self.architecture(x)
@@ -101,14 +101,14 @@ class DNN4BugPrediction_Pytorch(nn.Module):
                 dataset4Train = Dataset4SearchHyperParameter([list(i) for i in zip(*arrayOfD4TAndD4V[index4CrossValidation]["training"])][1:])
                 dataset4Test = Dataset4SearchHyperParameter([list(i) for i in zip(*arrayOfD4TAndD4V[index4CrossValidation]["validation"])][1:])
                 dataloader={
-                    "train": DataLoader(dataset4Train, batch_size = sizeBatch),
-                    "valid": DataLoader(dataset4Test, batch_size = sizeBatch)
+                    "train": DataLoader(dataset4Train, batch_size = sizeBatch, pin_memory=True),
+                    "valid": DataLoader(dataset4Test, batch_size = sizeBatch, pin_memory=True)
                 }
                 scoreAverage=0
                 numFeatures = len(dataset4Train.__getitem__(0)[0])
                 print(numFeatures)
                 chooseModel(trial, numFeatures)
-                model = self.to("cpu")
+                model = self.to(self.device)
                 summary(model, input_size=(1 , 24))
                 chooseOptimizer(trial, model)
                 loss_fn = nn.BCELoss()

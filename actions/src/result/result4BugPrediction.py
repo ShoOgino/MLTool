@@ -1,11 +1,20 @@
+from os import path
+
+
 class Result4BugPrediction:
     pathResult = ""
     pathLogSearchHyperParameter=""
     pathLogSearchParameter=""
     pathHyperParameter = ""
     pathParameter = ""
-    def setPathResult(pathResult):
-        Result4BugPrediction.pathResult = pathResult
+    def clear():
+        Result4BugPrediction.pathResult=""
+        Result4BugPrediction.pathLogSearchHyperParameter=""
+        Result4BugPrediction.pathLogSearchParameter=""
+        Result4BugPrediction.pathHyperParameter = ""
+        Result4BugPrediction.pathParameter = ""
+    def setPathResult(pathResult_):
+        Result4BugPrediction.pathResult = pathResult_
     def getPathResult():
         return Result4BugPrediction.pathResult
     def setPathLogSearchHyperParameter(pathLogSearchHyperParameter):
