@@ -32,7 +32,7 @@ class Experiment():
         )
 
         self.model = RF4BugPrediction()
-        self.model.setPeriod4HyperParameterSearch(1*60*60)
+        self.model.setPeriod4HyperParameterSearch(60*60*10)
         #self.model.setTrials4HyperParameterSearch(1)
         self.model.setIsCrossValidation(True)
 
@@ -42,6 +42,7 @@ class Experiment():
         shutil.copy(__file__, Result4BugPrediction.pathResult)
 
 def do(setting):
+    print(setting)
     experiment = Experiment(setting)
     maneger = Maneger()
     maneger.run(experiment)
@@ -71,8 +72,10 @@ def main():
             if(setting["pattern"]=="r" and not setting in settings): settings.append(setting)
     print(settings)
     numOfProcessers = multiprocessing.cpu_count()
-    pool = Pool(numOfProcessers-2)
+    pool = Pool(numOfProcessers -2)
     result = pool.map(do, settings)
+#    for setting in settings:
+#        do(setting)
 
 
 if __name__ == '__main__':
