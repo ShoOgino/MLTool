@@ -59,6 +59,15 @@ class RF4BugPrediction():
             return scoreAverage
         optuna.logging.disable_default_handler()
         study = optuna.create_study()
+        hpDefault ={
+                'n_estimators': 100,
+                'max_depth': None,
+                'max_leaf_nodes': None,
+                'min_samples_leaf': 1,
+                'min_samples_split': 2,
+                'random_state':42
+        }
+        study.enqueue_trial(hpDefault)
         study.optimize(objectiveFunction, timeout=self.period4HyperParameterSearch)#n_trials=self.trials4HyperParameterSearch)
 
         #save the hyperparameter that seems to be the best.

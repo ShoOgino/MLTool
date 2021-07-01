@@ -44,14 +44,15 @@ def do(setting):
 def main():
     dirDatasets = r"../datasets"
     namesProject = [
-        #"cassandra",
-        #"checkstyle",
+        "cassandra",
+        "checkstyle",
         "egit"
-        #"jgit",
-        #"linuxtools",
-        #"realm-java",
-        #"sonar-java",
-        #"poi"
+        "jgit",
+        "linuxtools",
+        "realm-java",
+        "sonar-java",
+        "poi",
+        "wicket"
     ]
     patterns4DatasetTrain = [
         1,
