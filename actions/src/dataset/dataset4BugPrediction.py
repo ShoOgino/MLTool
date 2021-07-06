@@ -14,14 +14,38 @@ class Dataset4BugPrediction():
         self.isCrossValidation = True
 
     def loadRecords4Train(self):
-        self.records4Train=[]
+        recordsTemp={}
         for path in self.pathsRecords4Train:
             with open(path, encoding="utf-8") as f:
                 records = csv.reader(f)
                 for i, row in enumerate(records):
                     if(not ("test" in row[0] or "Test" in row[0])):
-                    #if(not (row[11] == "0" or "test" in row[0] or "Test" in row[0])):
-                        self.records4Train.append([row[0], int(row[1]), [float(x) for x in row[2:26]]])
+                        if(not row[0] in recordsTemp):
+                            recordsTemp[row[0]] = []
+                            recordsTemp[row[0]].append([row[0], int(row[1]), [float(x) for x in row[2:26]]])
+                        else:
+                            for record in recordsTemp[row[0]]:
+                                flag = False
+                                if(float(row[11]) == 0
+                                    and record[2][9]== 0
+                                    and float(row[2])==record[2][0]
+                                    and float(row[3])==record[2][1]
+                                    and float(row[4])==record[2][2]
+                                    and float(row[5])==record[2][3]
+                                    and float(row[6])==record[2][4]
+                                    and float(row[7])==record[2][5]
+                                    and float(row[8])==record[2][6]
+                                    and float(row[9])==record[2][7]
+                                    and float(row[10])==record[2][8]
+                                ):
+                                    #print(row)
+                                    #print(record)
+                                    flag = True
+                            if(not flag): 
+                                recordsTemp[row[0]].append([row[0], int(row[1]), [float(x) for x in row[2:26]]])
+        for path in recordsTemp:
+            self.records4Train.extend(recordsTemp[path])
+
 
     def loadRecords4Test(self):
         self.records4Test=[]

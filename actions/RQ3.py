@@ -13,6 +13,7 @@ import multiprocessing
 import pprint
 import math
 import re
+import operator
 
 class Experiment():
     def __init__(self, setting):
@@ -43,16 +44,19 @@ def do(setting):
 
 def main():
     dirDatasets = r"../datasets"
+    #namesProject = [
+    #    "cassandra",
+    #    "checkstyle",
+    #    "egit",
+    #    "jgit",
+    #    "linuxtools",
+    #    "realm-java",
+    #    "sonar-java",
+    #    "poi",
+    #    "wicket"
+    #]
     namesProject = [
-        "cassandra",
-        "checkstyle",
-        "egit"
-        "jgit",
-        "linuxtools",
-        "realm-java",
-        "sonar-java",
-        "poi",
-        "wicket"
+        "cassandra"
     ]
     patterns4DatasetTrain = [
         1,
@@ -81,8 +85,7 @@ def main():
             setting["torikata"] = torikata
             expressionDataset4Train = dirDatasets+"/"+setting["nameProject"]+"/output/"+pattern["numOfRelease"]+"_"+pattern["interval"]+"_"+"train*.csv"
             pathsAll = glob.glob(expressionDataset4Train)
-            if(setting["interval"]!="r"):
-                pathsAll = sorted(pathsAll, key=lambda s: int(re.findall(r'\d+', s)[2]))
+            pathsAll = sorted(pathsAll, key=lambda s: int(re.findall(r'\d+', s)[2]))
             #pprint.pprint(pathsAll)
             setting["pathsDataset4Train"] = pathsAll[0:math.ceil((len(pathsAll)/5)*setting["torikata"])]
             setting["pathsDataset4Test"] = [dirDatasets+"/"+setting["nameProject"]+"/output/"+pattern["numOfRelease"]+"_"+pattern["interval"]+"_"+"test.csv"]
@@ -90,6 +93,8 @@ def main():
 #    numOfProcessers = multiprocessing.cpu_count()
 #    pool = Pool(numOfProcessers -2)
 #    result = pool.map(do, settings)
+    settings.sort(key=operator.itemgetter('nameProject', 'numOfRelease', 'interval', 'torikata'))
+    print(settings)
     for setting in settings:
         pprint.pprint(setting)
         do(setting)
