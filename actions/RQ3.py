@@ -27,7 +27,7 @@ class Experiment():
         self.dataset.setPathsRecords4Test(setting["pathsDataset4Test"])
 
         self.model = RF4BugPrediction()
-        self.model.setPeriod4HyperParameterSearch(60*60*10)
+        self.model.setPeriod4HyperParameterSearch(10)
         #self.model.setTrials4HyperParameterSearch(1)
         self.model.setIsCrossValidation(True)
 
@@ -85,14 +85,14 @@ def main():
                 pathsAll = sorted(pathsAll, key=lambda s: int(re.findall(r'\d+', s)[2]))
             #pprint.pprint(pathsAll)
             setting["pathsDataset4Train"] = pathsAll[0:math.ceil((len(pathsAll)/5)*setting["torikata"])]
-            setting["pathsDataset4Test"] = [dirDatasets+"/"+nameProject+"/output/"+pattern["numOfRelease"]+"_"+pattern["interval"]+"_"+"test.csv"]
-            #pprint.pprint(setting)
+            setting["pathsDataset4Test"] = [dirDatasets+"/"+setting["nameProject"]+"/output/"+pattern["numOfRelease"]+"_"+pattern["interval"]+"_"+"test.csv"]
             settings.append(setting)
-    numOfProcessers = multiprocessing.cpu_count()
-    pool = Pool(numOfProcessers -2)
-    result = pool.map(do, settings)
-#    for setting in settings:
-#        do(setting)
+#    numOfProcessers = multiprocessing.cpu_count()
+#    pool = Pool(numOfProcessers -2)
+#    result = pool.map(do, settings)
+    for setting in settings:
+        pprint.pprint(setting)
+        do(setting)
 
 
 if __name__ == '__main__':
