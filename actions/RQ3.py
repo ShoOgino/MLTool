@@ -14,12 +14,15 @@ import pprint
 import math
 import re
 import operator
+import datetime
+import argparse
 
 class Experiment():
     def __init__(self, setting):
-        self.id = setting["nameProject"]+"_"+setting["numOfRelease"]+"_"+setting["interval"]+"_"+str(setting["torikata"])
+        self.id = setting["nameProject"]+"_"+setting["numOfRelease"]+"_"+setting["interval"]+"_"+str(setting["torikata"])+"_"+str(datetime.datetime.today().strftime("%Y%m%d_%H%M%S"))
 
         self.purpose = ["searchHyperParameter", "searchParameter", "test"]
+        #self.purpose = ["searchParameter", "test"]
 
         self.dataset = Dataset4BugPrediction()
         self.dataset.setPathsRecords4Train(setting["pathsDataset4Train"])
@@ -28,13 +31,15 @@ class Experiment():
         self.dataset.setPathsRecords4Test(setting["pathsDataset4Test"])
 
         self.model = RF4BugPrediction()
-        self.model.setPeriod4HyperParameterSearch(10)
+        #self.model.setPeriod4HyperParameterSearch(60*60*10)
+        self.model.setPeriod4HyperParameterSearch(60)
         #self.model.setTrials4HyperParameterSearch(1)
         self.model.setIsCrossValidation(True)
 
         Result4BugPrediction.clear()#${result}=results
         Result4BugPrediction.setPathResult("results/"+self.id)#${result}=results
         os.makedirs(Result4BugPrediction.pathResult, exist_ok=True)
+        #Result4BugPrediction.setPathHyperParameter(setting["pathHyperParameter"])
         shutil.copy(__file__, Result4BugPrediction.pathResult)
 
 def do(setting):
@@ -42,21 +47,17 @@ def do(setting):
     maneger = Maneger()
     maneger.run(experiment)
 
-def main():
-    dirDatasets = r"../datasets"
-    #namesProject = [
-    #    "cassandra",
-    #    "checkstyle",
-    #    "egit",
-    #    "jgit",
-    #    "linuxtools",
-    #    "realm-java",
-    #    "sonar-java",
-    #    "poi",
-    #    "wicket"
-    #]
+def main(dirDatasets):
+    #dirHyperParameter = r"C:\Users\login\data\workspace\MLTool\rq3\hyperparameter"
     namesProject = [
-        "cassandra"
+        #"cassandra",
+        #"egit",
+        #"jgit"
+        #"linuxtools",
+        "realm-java"
+        #"sonar-java",
+        #"poi",
+        #"wicket"
     ]
     patterns4DatasetTrain = [
         1,
@@ -68,7 +69,7 @@ def main():
     settings = []
     patterns = []
     for nameProject in namesProject:
-        pathsDataset = glob.glob(dirDatasets+"/"+nameProject+"/output/*.csv")
+        pathsDataset = glob.glob(dirDatasets+"/"+nameProject+"/*.csv")
         for pathDataset in pathsDataset:
             filenameDataset = os.path.splitext(os.path.basename(pathDataset))[0]
             pattern = {}
@@ -83,22 +84,27 @@ def main():
             setting["numOfRelease"] = pattern["numOfRelease"]
             setting["interval"] = pattern["interval"]
             setting["torikata"] = torikata
-            expressionDataset4Train = dirDatasets+"/"+setting["nameProject"]+"/output/"+pattern["numOfRelease"]+"_"+pattern["interval"]+"_"+"train*.csv"
+            expressionDataset4Train = dirDatasets+"/"+setting["nameProject"]+"/"+pattern["numOfRelease"]+"_"+pattern["interval"]+"_"+"train*.csv"
             pathsAll = glob.glob(expressionDataset4Train)
+            print(pattern)
             pathsAll = sorted(pathsAll, key=lambda s: int(re.findall(r'\d+', s)[2]))
             #pprint.pprint(pathsAll)
             setting["pathsDataset4Train"] = pathsAll[0:math.ceil((len(pathsAll)/5)*setting["torikata"])]
-            setting["pathsDataset4Test"] = [dirDatasets+"/"+setting["nameProject"]+"/output/"+pattern["numOfRelease"]+"_"+pattern["interval"]+"_"+"test.csv"]
+            setting["pathsDataset4Test"] = [dirDatasets+"/"+setting["nameProject"]+"/"+pattern["numOfRelease"]+"_"+pattern["interval"]+"_"+"test.csv"]
+            #setting["pathHyperParameter"] = dirHyperParameter+"/"+setting["nameProject"]+"_"+setting["numOfRelease"]+"_"+setting["interval"]+"_"+str(setting["torikata"])+"/hyperparameter.json"
             settings.append(setting)
-#    numOfProcessers = multiprocessing.cpu_count()
-#    pool = Pool(numOfProcessers -2)
-#    result = pool.map(do, settings)
     settings.sort(key=operator.itemgetter('nameProject', 'numOfRelease', 'interval', 'torikata'))
     print(settings)
-    for setting in settings:
-        pprint.pprint(setting)
-        do(setting)
+    numOfProcessers = multiprocessing.cpu_count()
+    pool = Pool(numOfProcessers-2)
+    result = pool.map(do, settings)
+#    for setting in settings:
+#        pprint.pprint(setting)
+#        do(setting)
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dirDatasets')
+    args = parser.parse_args()
+    main(args.dirDatasets)

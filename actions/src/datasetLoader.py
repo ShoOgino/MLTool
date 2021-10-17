@@ -15,7 +15,7 @@ class DatasetLoader:
             train = csv.reader(f)
             for i, row in enumerate(train):
                 dataTrain[0].append(row[0])
-                dataTrain[1].append([float(x) for x in row[2:]])
+                dataTrain[1].append([float(x) for x in row[3:]])
                 dataTrain[2].append(int(row[1]))
             dataTrain[0]=np.array(dataTrain[0])
             dataTrain[1]=np.array(dataTrain[1])
@@ -29,7 +29,7 @@ class DatasetLoader:
             valid = csv.reader(f)
             for i, row in enumerate(valid):
                 dataValid[0].append(row[0])
-                dataValid[1].append([float(x) for x in row[2:]])
+                dataValid[1].append([float(x) for x in row[3:]])
                 dataValid[2].append(int(row[1]))
             dataValid[0] = np.array(dataValid[0])
             dataValid[1] = np.array(dataValid[1])
@@ -44,7 +44,7 @@ class DatasetLoader:
             train = csv.reader(f)
             for i, row in enumerate(train):
                 dataTrain[0].append(row[0])
-                dataTrain[1].append([float(x) for x in row[2:]])
+                dataTrain[1].append([float(x) for x in row[3:]])
                 dataTrain[2].append(int(row[1]))
         dataTrain[0] = np.array(dataTrain[0])
         dataTrain[1] = np.array(dataTrain[1])
@@ -54,7 +54,7 @@ class DatasetLoader:
             valid = csv.reader(f)
             for i, row in enumerate(valid):
                 dataValid[0].append(row[0])
-                dataValid[1].append([float(x) for x in row[2:]])
+                dataValid[1].append([float(x) for x in row[3:]])
                 dataValid[2].append(int(row[1]))
         dataValid[0] = np.array(dataValid[0])
         dataValid[1] = np.array(dataValid[1])
@@ -68,7 +68,7 @@ class DatasetLoader:
             test = csv.reader(f)
             for i, row in enumerate(test):
                 dataTest[0].append(row[0])
-                dataTest[1].append([float(x) for x in row[2:]])
+                dataTest[1].append([float(x) for x in row[3:]])
                 dataTest[2].append(int(row[1]))
         dataTest[0] = np.array(dataTest[0])
         dataTest[1] = np.array(dataTest[1])
